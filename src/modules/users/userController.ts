@@ -36,7 +36,7 @@ export const loginUser = async (req: Request, resp: Response) => {
 //User profile
 export const userProfile = async (req: Request, resp: Response) => {
   try {
-    const user = req.body.user;
+    const user = req.user;
     resp.status(statusCodes.successCode).send({ data: user });
   } catch (err) {
     resp.status(statusCodes.serverErrorCode).send(errorMess.serverError);
@@ -46,12 +46,10 @@ export const userProfile = async (req: Request, resp: Response) => {
 // logout user
 export const logOutUser = async (req: Request, resp: Response) => {
   try {
-    req.body.user.tokens = req.body.user.tokens.filter(
-      (token: { token: string }) => {
-        return token.token !== req.body.token;
-      }
-    );
-    await req.body.user.save();
+    req.user.tokens = req.user.tokens.filter((token: { token: string }) => {
+      return token.token !== req.token;
+    });
+    await req.user.save();
     resp.status(statusCodes.successCode).send({ message: successMess.success });
   } catch (err) {
     resp.status(statusCodes.serverErrorCode).send(errorMess.serverError);
@@ -61,8 +59,8 @@ export const logOutUser = async (req: Request, resp: Response) => {
 // logout user from all sessions
 export const logOutAll = async (req: Request, resp: Response) => {
   try {
-    req.body.user.tokens = [];
-    await req.body.user.save();
+    req.user.tokens = [];
+    await req.user.save();
     resp.status(statusCodes.successCode).send({ message: successMess.Logout });
   } catch (err) {
     resp.status(statusCodes.serverErrorCode).send(errorMess.serverError);
@@ -72,24 +70,23 @@ export const logOutAll = async (req: Request, resp: Response) => {
 // update user
 export const updateUser = async (req: Request, resp: Response) => {
   const updates = Object.keys(req.body);
-  console.log(updates);
   const allowedUpdates = ["name", "email", "password", "age"];
 
   const isValidOperation = validUpdate(updates, allowedUpdates);
-  // if (!isValidOperation) {
-  //   return resp
-  //     .status(statusCodes.badRequestCode)
-  //     .send({ message: errorMess.badRequest });
-  // }
+  if (!isValidOperation) {
+    return resp
+      .status(statusCodes.badRequestCode)
+      .send({ message: errorMess.badRequest });
+  }
 
   try {
-    const user = req.body.user;
+    const user = req.user;
     if (!user) {
       return resp
         .status(statusCodes.notFoundCode)
         .send(errorMess.notFound(constants.user));
     }
-    const User = await updateUserById(updates, user, req.body);
+    const User = await updateUserById(user, req.body);
     resp
       .status(statusCodes.createdCode)
       .send({ data: User, message: successMess.created });
@@ -101,10 +98,10 @@ export const updateUser = async (req: Request, resp: Response) => {
 // delete user
 export const deleteUser = async (req: Request, resp: Response) => {
   try {
-    deleteUserById(req.body.user._id);
+    const deletedUser = await deleteUserById(req.user._id);
     resp
       .status(statusCodes.successCode)
-      .send({ data: req.body.user, message: successMess.success });
+      .send({ data: deletedUser, message: successMess.success });
   } catch (err) {
     resp.status(statusCodes.serverErrorCode).send(errorMess.serverError);
   }

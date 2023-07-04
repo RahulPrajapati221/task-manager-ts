@@ -11,34 +11,36 @@ import { validUpdate } from "../../utils/validateUpdate";
 
 export const getTasks = async (req: Request, resp: Response) => {
   const taskFilter = getTask(req.query);
-  console.log(req.query);
   const { match, limit, skip, sort } = taskFilter;
-  const user = req.body.user;
+  const user = req.user;
   try {
-    await user.populate({
-      path: "tasks",
-      match,
-      options: {
-        limit,
-        skip,
-        sort,
-      },
-    });
-    const userTasks = user.tasks;
-    resp
-      .status(statusCodes.successCode)
-      .send({ data: userTasks, message: successMess.success });
+  await user.populate({
+    path: "tasks",
+    match,
+    options: {
+      limit,
+      skip,
+      sort,
+    },
+  });
+  const userTasks = user.tasks;
+  resp
+    .status(statusCodes.successCode)
+    .send({ data: userTasks, message: successMess.success });
   } catch (err) {
     resp.status(statusCodes.badRequestCode).send(errorMess.badRequest);
   }
 };
 
 //Create new Task
-export const createTasks = async (req: Request, resp: Response) => {
+export const createTasks = async (
+  req: Request,
+  resp: Response
+)=> {
   try {
     const task = {
       ...req.body,
-      owner_id: req.body.user._id,
+      owner_id: req.user._id,
     };
     const newTask = await createTask(task);
     resp
@@ -50,11 +52,11 @@ export const createTasks = async (req: Request, resp: Response) => {
 };
 
 //find Task using id
-export const findTask = async (req: Request, resp: Response) => {
+export const findTask = async (req: Request, resp: Response)=> {
   try {
     const task = {
       _id: req.params.id,
-      owner_id: req.body.user._id,
+      owner_id: req.user._id,
     };
     const Task = await findTaskById(task);
     if (!task) {
@@ -69,7 +71,10 @@ export const findTask = async (req: Request, resp: Response) => {
 };
 
 //Update Task
-export const updateTask = async (req: Request, resp: Response) => {
+export const updateTask = async (
+  req: Request,
+  resp: Response
+) => {
   const updates = ["description", "completed"];
   const allowedUpdates = ["description", "completed"];
 
@@ -80,15 +85,15 @@ export const updateTask = async (req: Request, resp: Response) => {
   try {
     const verifyId = {
       _id: req.params.id,
-      owner_id: req.body.user._id,
+      owner_id: req.user._id,
     };
-    const task = await findTaskById(verifyId);
+    let task = await findTaskById(verifyId);
     if (!task) {
       return resp
         .status(statusCodes.notFoundCode)
         .send(errorMess.notFound(constants.task));
     }
-    const Task = await updateTaskDetails(task, updates, req.body);
+    const Task = await updateTaskDetails(verifyId, req.body);
 
     resp.send({ data: Task, message: successMess.success });
   } catch (e) {
@@ -97,9 +102,12 @@ export const updateTask = async (req: Request, resp: Response) => {
 };
 
 // Delete Task
-export const deleteTask = async (req: Request, resp: Response) => {
+export const deleteTask = async (
+  req: Request,
+  resp: Response
+) => {
   try {
-    const task = await deleteTaskById(req.params.id, req.body.user._id);
+    const task = await deleteTaskById(req.params.id, req.user._id);
     resp.status(statusCodes.successCode).send({ data: task });
   } catch (err) {
     resp.status(statusCodes.serverErrorCode).send(errorMess.serverError);

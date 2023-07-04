@@ -1,9 +1,18 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
-import Task from "../tasks/task-model";
 import { errorMess } from "../../constant";
+import Task from "../tasks/task-model";
 
+export interface IUser {
+  name: string;
+  email: string;
+  password: string;
+  age: number;
+  tokens: { token: string }[];
+}
+
+export interface IUserModel extends IUser, Document {}
 
 const userSchema = new mongoose.Schema(
   {
@@ -83,6 +92,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const User = mongoose.model<IUserModel>("User", userSchema);
 
 export default User;

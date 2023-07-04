@@ -3,6 +3,13 @@ import User from "../modules/users/user-model";
 import { errorMess, constants } from "../constant";
 import { Request, Response, NextFunction } from "express";
 
+declare module "express-serve-static-core" {
+  interface Request {
+    token?: string;
+    user?: any;
+  }
+}
+
 export const auth = async (
   req: Request,
   resp: Response,
@@ -21,8 +28,8 @@ export const auth = async (
     if (!user) {
       throw new Error(errorMess.notFound(constants.user));
     }
-    req.body.token = token;
-    req.body.user = user;
+    req.token = token;
+    req.user = user;
     next();
   } catch (e) {
     resp.status(401).send({ error: errorMess.unauthorized });

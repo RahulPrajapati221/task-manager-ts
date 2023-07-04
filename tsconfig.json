@@ -12,9 +12,9 @@
     "rootDir": "./src",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     /* Type Checking */
-    "strict": false,
+    "strict": true,
 
     /* Completeness */
     "skipLibCheck": true
