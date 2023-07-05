@@ -1,13 +1,8 @@
-import mongoose, { Document } from "mongoose";
+import {Schema, model, Document } from "mongoose";
+import { ITask } from "../../DocTypes";
 
-export interface ITask {
-  description: string;
-  completed: boolean;
-}
 
-export interface ITaskModel extends ITask, Document {}
-
-const taskSchema = new mongoose.Schema(
+const taskSchema = new Schema<ITask>(
   {
     description: {
       type: String,
@@ -19,7 +14,7 @@ const taskSchema = new mongoose.Schema(
       default: false,
     },
     owner_id: {
-      type: mongoose.Schema.Types.ObjectId,
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
@@ -29,6 +24,6 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-const Task = mongoose.model<ITaskModel>("Task", taskSchema);
+const Task = model<ITask>("Task", taskSchema);
 
 export default Task;

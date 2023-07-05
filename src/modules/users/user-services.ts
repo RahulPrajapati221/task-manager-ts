@@ -1,38 +1,39 @@
 import User from "./user-model";
 import { generateToken } from "../../utils/generateToken";
 import { findByCredentials } from "../../utils/findByCredential";
-import { IUser, IUserModel } from "./user-model";
-import { userAndTokenType } from "../../utils/DocTypes";
+import { ITask, ITaskModel, IUser } from "../../DocTypes";
+import { VerifyUserType } from "../../DocTypes";
+import Task from "../tasks/task-model";
 
-export const createUser = async (reqBody: IUser): Promise<userAndTokenType> => {
+export const createUser = async (reqBody: IUser): Promise<VerifyUserType> => {
   const user = await User.create(reqBody);
   const token = await generateToken(user);
   return { user, token };
 };
 
 export const updateUserById = async (
-  user: IUserModel,
+  user: IUser,
   reqBody: IUser
-): Promise<IUserModel | null> => {
-  await User.findByIdAndUpdate(user, reqBody);
-  const updatedUser = User.findById(user);
+): Promise<IUser | null> => {
+  const updatedUser = await User.findByIdAndUpdate(user, reqBody, {
+    new: true,
+  });
   return updatedUser;
 };
 
 export const findUser = async (
   email: string,
   password: string
-): Promise<userAndTokenType> => {
+): Promise<VerifyUserType> => {
   const user = await findByCredentials(email, password);
   const token = await generateToken(user);
   return { user, token };
 };
 
-export const deleteUserById = async (
-  user_id: string
-): Promise<IUserModel | null> => {
+export const deleteUserById = async (user_id: string) => {
   const deletedUser = await User.findOneAndDelete({
     _id: user_id,
   });
+  await Task.deleteMany({ owner_id: user_id });
   return deletedUser;
 };

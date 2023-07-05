@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { IUserModel } from "../modules/users/user-model";
+import { IUserModel } from "../DocTypes";
 
-export const generateToken = async (user:IUserModel) => {
+export const generateToken = async (user: IUserModel): Promise<string> => {
   const token = jwt.sign(
     { _id: user._id.toString() },
     process.env.JWT_SECRET as string

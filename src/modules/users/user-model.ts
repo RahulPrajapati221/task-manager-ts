@@ -1,20 +1,10 @@
-import mongoose, { Document } from "mongoose";
+import { Schema, model } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { errorMess } from "../../constant";
-import Task from "../tasks/task-model";
+import {IUser} from "../../DocTypes"
 
-export interface IUser {
-  name: string;
-  email: string;
-  password: string;
-  age: number;
-  tokens: { token: string }[];
-}
-
-export interface IUserModel extends IUser, Document {}
-
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -92,6 +82,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.model<IUserModel>("User", userSchema);
+const User = model<IUser>("User", userSchema);
 
 export default User;

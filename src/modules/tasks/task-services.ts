@@ -1,6 +1,6 @@
 import Task from "./task-model";
-import { ITask, ITaskModel } from "./task-model";
-import { findTaskByIdType, reqQueryType } from "../../utils/DocTypes";
+import { ITask, ITaskModel } from "../../DocTypes";
+import { TaskIdType, ReqQueryType, MatchType } from "../../DocTypes";
 
 export const createTask = async (taskBody: ITask): Promise<ITaskModel> => {
   const task = await Task.create(taskBody);
@@ -8,8 +8,8 @@ export const createTask = async (taskBody: ITask): Promise<ITaskModel> => {
 };
 
 export const findTaskById = async (
-  taskBody: findTaskByIdType
-): Promise<ITaskModel | null> => {
+  taskBody: TaskIdType
+): Promise<ITask | null> => {
   const task = await Task.findOne({
     _id: taskBody._id,
     owner_id: taskBody.owner_id,
@@ -17,13 +17,9 @@ export const findTaskById = async (
   return task;
 };
 
-interface Match {
-  completed: boolean;
-}
-
-export const getTask = (reqQuery: reqQueryType) => {
+export const getTask = (reqQuery: ReqQueryType) => {
   const sort: Record<string, any> = {};
-  const match = {} as Match;
+  const match = {} as MatchType;
   if (reqQuery.completed) {
     match.completed = reqQuery.completed == "true";
   }
@@ -40,21 +36,19 @@ export const getTask = (reqQuery: reqQueryType) => {
 };
 
 export const updateTaskDetails = async (
-  verifyId: findTaskByIdType,
+  verifyId: TaskIdType,
   reqBody: Record<string, string>
-): Promise<ITaskModel | null> => {
-  await Task.findByIdAndUpdate(verifyId, reqBody);
-  const updatedTask = await findTaskById(verifyId);
+): Promise<ITask | null> => {
+  const updatedTask = await Task.findByIdAndUpdate(verifyId, reqBody, {
+    new: true,
+  });
   return updatedTask;
 };
 
-export const deleteTaskById = async (
-  taskId: string,
-  ownerId: string
-): Promise<ITaskModel | null> => {
+export const deleteTaskById = async (Id: TaskIdType): Promise<ITask | null> => {
   const task = await Task.findOneAndDelete({
-    _id: taskId,
-    owner_id: ownerId,
+    _id: Id._id,
+    owner_id: Id.owner_id,
   });
   return task;
 };
