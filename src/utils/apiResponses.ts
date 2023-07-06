@@ -3,11 +3,11 @@ import { Response } from "express";
 export const successResp = (
   resp: Response,
   statusCode: number,
-  result: any
+  {data, message}:{data:any, message:string}
 ) => {
   return resp
     .status(statusCode)
-    .send({ data: result.data, message: result.message });
+    .send({ data, message });
 };
 
 export const errorResp = (
@@ -15,5 +15,5 @@ export const errorResp = (
   statusCode: number,
   message: string
 ) => {
-  return resp.status(statusCode).send({ message: message });
+  return resp.status(statusCode).send({ message });
 };

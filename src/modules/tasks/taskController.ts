@@ -9,7 +9,6 @@ import {
 import { successMess, statusCodes, errorMess, constants } from "../../constant";
 import { validUpdate } from "../../utils/validateUpdate";
 import { successResp, errorResp } from "../../utils/apiResponses";
-import { TaskIdType } from "../../DocTypes";
 
 export const getTasks = async (req: Request, resp: Response) => {
   const taskFilter = getTask(req.query);
@@ -55,12 +54,12 @@ export const createTasks = async (req: Request, resp: Response) => {
 //find Task using id
 export const findTask = async (req: Request, resp: Response) => {
   try {
-    const task = {
+    const taskId = {
       _id: req.params.id,
       owner_id: req.body.user._id,
     };
-    const Task = await findTaskById(task);
-    if (!task) {
+    const Task = await findTaskById(taskId);
+    if (!Task) {
       return errorResp(
         resp,
         statusCodes.notFoundCode,
@@ -111,11 +110,11 @@ export const updateTask = async (req: Request, resp: Response) => {
 // Delete Task
 export const deleteTask = async (req: Request, resp: Response) => {
   try {
-    const verifyId = {
+    const taskId = {
       _id: req.params.id,
       owner_id: req.body.user._id,
     };
-    let task = await findTaskById(verifyId);
+    let task = await findTaskById(taskId);
     if (!task) {
       return errorResp(
         resp,
@@ -123,7 +122,7 @@ export const deleteTask = async (req: Request, resp: Response) => {
         errorMess.notFound(constants.task)
       );
     }
-    const deletedTask = await deleteTaskById(verifyId);
+    const deletedTask = await deleteTaskById(taskId);
     return successResp(resp, statusCodes.createdCode, {
       data: deletedTask,
       message: successMess.success,

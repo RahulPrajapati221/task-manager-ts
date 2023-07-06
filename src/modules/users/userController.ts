@@ -8,7 +8,6 @@ import { validUpdate } from "../../utils/validateUpdate";
 import { Request, Response } from "express";
 import { successMess, errorMess, statusCodes, constants } from "../../constant";
 import { successResp, errorResp } from "../../utils/apiResponses";
-import { IUser, IUserModel } from "../../DocTypes";
 
 //Register user
 export const registerUser = async (req: Request, resp: Response) => {

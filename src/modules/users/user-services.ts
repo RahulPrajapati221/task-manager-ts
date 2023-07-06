@@ -1,7 +1,7 @@
 import User from "./user-model";
 import { generateToken } from "../../utils/generateToken";
 import { findByCredentials } from "../../utils/findByCredential";
-import { ITask, ITaskModel, IUser } from "../../DocTypes";
+import { IUser } from "../../DocTypes";
 import { VerifyUserType } from "../../DocTypes";
 import Task from "../tasks/task-model";
 

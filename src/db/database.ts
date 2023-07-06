@@ -1,7 +1,7 @@
 import mongoose, { ConnectOptions } from "mongoose";
 
 //Database connection
-export const connectDB = () => {
+export const connectDB = (): void => {
   mongoose
     .connect(
       process.env.DB_URI as string,

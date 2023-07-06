@@ -8,12 +8,10 @@ export const createTask = async (taskBody: ITask): Promise<ITaskModel> => {
 };
 
 export const findTaskById = async (
-  taskBody: TaskIdType
+  taskId: TaskIdType
 ): Promise<ITask | null> => {
-  const task = await Task.findOne({
-    _id: taskBody._id,
-    owner_id: taskBody.owner_id,
-  });
+  const { _id, owner_id } = taskId;
+  const task = await Task.findOne({ _id, owner_id });
   return task;
 };
 
@@ -26,7 +24,6 @@ export const getTask = (reqQuery: ReqQueryType) => {
 
   if (reqQuery.sortBy) {
     const parts = reqQuery.sortBy.split(":");
-    console.log(parts);
     sort[parts[0]] = parts[1] === "desc" ? -1 : 1;
   }
 
@@ -45,10 +42,10 @@ export const updateTaskDetails = async (
   return updatedTask;
 };
 
-export const deleteTaskById = async (Id: TaskIdType): Promise<ITask | null> => {
-  const task = await Task.findOneAndDelete({
-    _id: Id._id,
-    owner_id: Id.owner_id,
-  });
+export const deleteTaskById = async (
+  TaskId: TaskIdType
+): Promise<ITask | null> => {
+  const { _id, owner_id } = TaskId;
+  const task = await Task.findOneAndDelete({ _id, owner_id });
   return task;
 };
