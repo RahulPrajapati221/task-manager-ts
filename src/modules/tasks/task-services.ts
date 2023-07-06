@@ -1,6 +1,11 @@
 import Task from "./task-model";
-import { ITask, ITaskModel } from "../../DocTypes";
-import { TaskIdType, ReqQueryType, MatchType } from "../../DocTypes";
+import {
+  ITask,
+  ITaskModel,
+  TaskIdType,
+  ReqQueryType,
+  MatchType,
+} from "../tasks/Task-Types";
 
 export const createTask = async (taskBody: ITask): Promise<ITaskModel> => {
   const task = await Task.create(taskBody);
@@ -10,12 +15,12 @@ export const createTask = async (taskBody: ITask): Promise<ITaskModel> => {
 export const findTaskById = async (
   taskId: TaskIdType
 ): Promise<ITask | null> => {
-  const { _id, owner_id } = taskId;
-  const task = await Task.findOne({ _id, owner_id });
+  const { _id, ownerId } = taskId;
+  const task = await Task.findOne({ _id, ownerId });
   return task;
 };
 
-export const getTask = (reqQuery: ReqQueryType) => {
+export const getTask = async (user: any, reqQuery: ReqQueryType) => {
   const sort: Record<string, any> = {};
   const match = {} as MatchType;
   if (reqQuery.completed) {
@@ -29,7 +34,17 @@ export const getTask = (reqQuery: ReqQueryType) => {
 
   const limit = parseInt(reqQuery.limit!);
   const skip = parseInt(reqQuery.skip!);
-  return { match, sort, limit, skip };
+  await user.populate({
+    path: "tasks",
+    match,
+    options: {
+      limit,
+      skip,
+      sort,
+    },
+  });
+  const userTasks = user.tasks;
+  return userTasks;
 };
 
 export const updateTaskDetails = async (
@@ -45,7 +60,7 @@ export const updateTaskDetails = async (
 export const deleteTaskById = async (
   TaskId: TaskIdType
 ): Promise<ITask | null> => {
-  const { _id, owner_id } = TaskId;
-  const task = await Task.findOneAndDelete({ _id, owner_id });
+  const { _id, ownerId } = TaskId;
+  const task = await Task.findOneAndDelete({ _id, ownerId });
   return task;
 };

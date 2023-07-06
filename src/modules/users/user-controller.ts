@@ -4,10 +4,11 @@ import {
   updateUserById,
   deleteUserById,
 } from "./user-services";
-import { validUpdate } from "../../utils/validateUpdate";
+import { validUpdate } from "../../utils/validUpdateField";
 import { Request, Response } from "express";
 import { successMess, errorMess, statusCodes, constants } from "../../constant";
-import { successResp, errorResp } from "../../utils/apiResponses";
+import { successResp, errorResp } from "../../utils/response";
+import User from "./user-model";
 
 //Register user
 export const registerUser = async (req: Request, resp: Response) => {
@@ -52,14 +53,13 @@ export const userProfile = async (req: Request, resp: Response) => {
 // logout user
 export const logOutUser = async (req: Request, resp: Response) => {
   try {
-    req.body.user.tokens = req.body.user.tokens.filter(
-      (token: { token: string }) => {
-        return token.token !== req.body.token;
-      }
-    );
-    await req.body.user.save();
+    const user = req.body.user;
+    user.tokens = user.tokens.filter((token: { token: string }) => {
+      return token.token !== req.body.token;
+    });
+    await User.updateOne(user);
     return successResp(resp, statusCodes.successCode, {
-      data: req.body.user,
+      data: user,
       message: successMess.Logout,
     });
   } catch (err) {
@@ -70,10 +70,11 @@ export const logOutUser = async (req: Request, resp: Response) => {
 // logout user from all sessions
 export const logOutAll = async (req: Request, resp: Response) => {
   try {
-    req.body.user.tokens = [];
-    await req.body.user.save();
+    const user = req.body.user;
+    user.tokens = [];
+    await user.updateOne(user);
     return successResp(resp, statusCodes.successCode, {
-      data: req.body.user,
+      data: user,
       message: successMess.Logout,
     });
   } catch (err) {
@@ -83,16 +84,10 @@ export const logOutAll = async (req: Request, resp: Response) => {
 
 // update user
 export const updateUser = async (req: Request, resp: Response) => {
-  const updates = Object.keys(req.body.update);
+  const updates = req.body.update;
   const allowedUpdates = ["name", "email", "password", "age"];
 
-  const isValidOperation = validUpdate(updates, allowedUpdates);
-  if (!isValidOperation) {
-    return resp
-      .status(statusCodes.badRequestCode)
-      .send({ message: errorMess.badRequest });
-  }
-
+  const invalidField = validUpdate(updates, allowedUpdates);
   try {
     const user = req.body.user;
     if (!user) {
@@ -102,9 +97,9 @@ export const updateUser = async (req: Request, resp: Response) => {
         errorMess.notFound(constants.user)
       );
     }
-    const User = await updateUserById(user, req.body.update);
+    const User = await updateUserById(user, updates);
     return successResp(resp, statusCodes.createdCode, {
-      data: User,
+      data: { Alert: errorMess.invalidUpdate(invalidField), User },
       message: successMess.created,
     });
   } catch (err) {

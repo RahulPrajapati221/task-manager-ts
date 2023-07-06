@@ -3,28 +3,17 @@ import {
   createTask,
   getTask,
   findTaskById,
-  updateTaskDetails,
   deleteTaskById,
+  updateTaskDetails,
 } from "./task-services";
 import { successMess, statusCodes, errorMess, constants } from "../../constant";
-import { validUpdate } from "../../utils/validateUpdate";
-import { successResp, errorResp } from "../../utils/apiResponses";
+import { validUpdate } from "../../utils/validUpdateField";
+import { successResp, errorResp } from "../../utils/response";
 
 export const getTasks = async (req: Request, resp: Response) => {
-  const taskFilter = getTask(req.query);
-  const { match, limit, skip, sort } = taskFilter;
   const user = req.body.user;
   try {
-    await user.populate({
-      path: "tasks",
-      match,
-      options: {
-        limit,
-        skip,
-        sort,
-      },
-    });
-    const userTasks = user.tasks;
+    const userTasks = await getTask(user, req.query);
     return successResp(resp, statusCodes.successCode, {
       data: userTasks,
       message: successMess.success,
@@ -39,7 +28,7 @@ export const createTasks = async (req: Request, resp: Response) => {
   try {
     const task = {
       ...req.body,
-      owner_id: req.body.user._id,
+      ownerId: req.body.user._id,
     };
     const newTask = await createTask(task);
     return successResp(resp, statusCodes.createdCode, {
@@ -56,7 +45,7 @@ export const findTask = async (req: Request, resp: Response) => {
   try {
     const taskId = {
       _id: req.params.id,
-      owner_id: req.body.user._id,
+      ownerId: req.body.user._id,
     };
     const Task = await findTaskById(taskId);
     if (!Task) {
@@ -77,17 +66,14 @@ export const findTask = async (req: Request, resp: Response) => {
 
 //Update Task
 export const updateTask = async (req: Request, resp: Response) => {
-  const updates = Object.keys(req.body.update);
+  const updates = req.body.update;
   const allowedUpdates = ["description", "completed"];
 
-  const isValidOperation = validUpdate(updates, allowedUpdates);
-  if (!isValidOperation) {
-    return errorResp(resp, statusCodes.badRequestCode, errorMess.badRequest);
-  }
+  const invalidField = validUpdate(updates, allowedUpdates);
   try {
     const verifyId = {
       _id: req.params.id,
-      owner_id: req.body.user._id,
+      ownerId: req.body.user._id,
     };
     let task = await findTaskById(verifyId);
     if (!task) {
@@ -97,9 +83,9 @@ export const updateTask = async (req: Request, resp: Response) => {
         errorMess.notFound(constants.task)
       );
     }
-    const Task = await updateTaskDetails(verifyId, req.body.update);
+    const Task = await updateTaskDetails(verifyId, updates);
     return successResp(resp, statusCodes.successCode, {
-      data: Task,
+      data: { Alert: errorMess.invalidUpdate(invalidField), Task },
       message: successMess.success,
     });
   } catch (e) {
@@ -112,16 +98,8 @@ export const deleteTask = async (req: Request, resp: Response) => {
   try {
     const taskId = {
       _id: req.params.id,
-      owner_id: req.body.user._id,
+      ownerId: req.body.user._id,
     };
-    let task = await findTaskById(taskId);
-    if (!task) {
-      return errorResp(
-        resp,
-        statusCodes.notFoundCode,
-        errorMess.notFound(constants.task)
-      );
-    }
     const deletedTask = await deleteTaskById(taskId);
     return successResp(resp, statusCodes.createdCode, {
       data: deletedTask,

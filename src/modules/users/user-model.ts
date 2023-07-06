@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { errorMess } from "../../constant";
-import {IUser} from "../../DocTypes"
+import { IUser } from "./User-Types";
 
 const userSchema = new Schema<IUser>(
   {
@@ -60,7 +60,7 @@ const userSchema = new Schema<IUser>(
 userSchema.virtual("tasks", {
   ref: "Task",
   localField: "_id",
-  foreignField: "owner_id",
+  foreignField: "ownerId",
 });
 
 userSchema.methods.toJSON = function () {

@@ -1,8 +1,8 @@
 import User from "./user-model";
 import { generateToken } from "../../utils/generateToken";
 import { findByCredentials } from "../../utils/findByCredential";
-import { IUser } from "../../DocTypes";
-import { VerifyUserType } from "../../DocTypes";
+import { IUser } from "./User-Types";
+import { VerifyUserType } from "./User-Types";
 import Task from "../tasks/task-model";
 
 export const createUser = async (reqBody: IUser): Promise<VerifyUserType> => {
@@ -34,6 +34,6 @@ export const deleteUserById = async (user_id: string) => {
   const deletedUser = await User.findOneAndDelete({
     _id: user_id,
   });
-  await Task.deleteMany({ owner_id: user_id });
+  await Task.deleteMany({ ownerId: user_id });
   return deletedUser;
 };

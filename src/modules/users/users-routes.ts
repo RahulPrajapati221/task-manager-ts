@@ -1,5 +1,5 @@
 import express from "express";
-import { auth } from "../middleware/auth";
+import { auth } from "../../middleware/auth";
 import {
   registerUser,
   loginUser,
@@ -8,7 +8,7 @@ import {
   logOutAll,
   updateUser,
   deleteUser,
-} from "../modules/users/userController";
+} from "./user-controller";
 const router = express.Router();
 
 //Register user

@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ITask } from "../../DocTypes";
+import { ITask } from "../tasks/Task-Types";
 
 const taskSchema = new Schema<ITask>(
   {
@@ -12,7 +12,7 @@ const taskSchema = new Schema<ITask>(
       type: Boolean,
       default: false,
     },
-    owner_id: {
+    ownerId: {
       type: Schema.Types.ObjectId,
       required: true,
       ref: "User",

@@ -5,8 +5,8 @@ import {
   findTask,
   updateTask,
   deleteTask,
-} from "../modules/tasks/taskController";
-import { auth } from "../middleware/auth";
+} from "./task-controller";
+import { auth } from "../../middleware/auth";
 const router = express.Router();
 
 router.get("/myTasks", auth, getTasks);
