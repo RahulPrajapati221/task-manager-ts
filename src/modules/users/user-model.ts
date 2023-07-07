@@ -2,7 +2,7 @@ import { Schema, model } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
 import { errorMess } from "../../constant";
-import { IUser } from "./User-Types";
+import { IUser } from "./user-type";
 
 const userSchema = new Schema<IUser>(
   {

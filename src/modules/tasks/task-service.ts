@@ -5,7 +5,7 @@ import {
   TaskIdType,
   ReqQueryType,
   MatchType,
-} from "../tasks/Task-Types";
+} from "./task-type";
 
 export const createTask = async (taskBody: ITask): Promise<ITaskModel> => {
   const task = await Task.create(taskBody);

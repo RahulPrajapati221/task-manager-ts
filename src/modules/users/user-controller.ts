@@ -3,7 +3,7 @@ import {
   findUser,
   updateUserById,
   deleteUserById,
-} from "./user-services";
+} from "./user-service";
 import { validUpdate } from "../../utils/validUpdateField";
 import { Request, Response } from "express";
 import { successMess, errorMess, statusCodes, constants } from "../../constant";

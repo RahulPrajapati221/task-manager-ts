@@ -1,7 +1,7 @@
 import User from "../modules/users/user-model";
 import bcrypt from "bcryptjs";
 import { errorMess, constants } from "../constant";
-import { IUserModel } from "../modules/users/User-Types";
+import { IUserModel } from "../modules/users/user-type";
 
 export const findByCredentials = async (
   email: string,

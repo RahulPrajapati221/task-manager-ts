@@ -1,7 +1,7 @@
 import express from "express";
 import { connectDB } from "./db/database";
-import userRouter from "./modules/users/users-routes";
-import taskRouter from "./modules/tasks/tasks-routes";
+import userRouter from "./modules/users/users-route";
+import taskRouter from "./modules/tasks/tasks-route";
 const app = express();
 const port = process.env.PORT || 3000;
 

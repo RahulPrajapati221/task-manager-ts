@@ -1,8 +1,8 @@
 import User from "./user-model";
 import { generateToken } from "../../utils/generateToken";
 import { findByCredentials } from "../../utils/findByCredential";
-import { IUser } from "./User-Types";
-import { VerifyUserType } from "./User-Types";
+import { IUser } from "./user-type";
+import { VerifyUserType } from "./user-type";
 import Task from "../tasks/task-model";
 
 export const createUser = async (reqBody: IUser): Promise<VerifyUserType> => {

@@ -5,7 +5,7 @@ import {
   findTaskById,
   deleteTaskById,
   updateTaskDetails,
-} from "./task-services";
+} from "./task-service";
 import { successMess, statusCodes, errorMess, constants } from "../../constant";
 import { validUpdate } from "../../utils/validUpdateField";
 import { successResp, errorResp } from "../../utils/response";
@@ -101,6 +101,13 @@ export const deleteTask = async (req: Request, resp: Response) => {
       ownerId: req.body.user._id,
     };
     const deletedTask = await deleteTaskById(taskId);
+    if (!deletedTask) {
+      return errorResp(
+        resp,
+        statusCodes.notFoundCode,
+        errorMess.notFound(constants.task)
+      );
+    }
     return successResp(resp, statusCodes.createdCode, {
       data: deletedTask,
       message: successMess.success,
