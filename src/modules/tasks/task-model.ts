@@ -1,6 +1,7 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
+import { ITask } from "./task-type";
 
-const taskSchema = new mongoose.Schema(
+const taskSchema = new Schema<ITask>(
   {
     description: {
       type: String,
@@ -11,8 +12,8 @@ const taskSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    owner_id: {
-      type: mongoose.Schema.Types.ObjectId,
+    ownerId: {
+      type: Schema.Types.ObjectId,
       required: true,
       ref: "User",
     },
@@ -22,6 +23,6 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-const Task = mongoose.model("Task", taskSchema);
+const Task = model<ITask>("Task", taskSchema);
 
 export default Task;

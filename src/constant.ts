@@ -23,6 +23,10 @@ export const errorMess = {
   serverError: "There is an internal server error.",
   unauthorized: "Access denied",
   notFound: (value: string) => `${value} Not found, Please try again.`,
+  invalidUpdate: (value: string[]) =>
+    !`${value}`
+      ? `All fields are correct`
+      : `( ' ${value} ' ) are invalid fields`,
 };
 
 export const constants = {

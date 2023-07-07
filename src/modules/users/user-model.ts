@@ -1,11 +1,10 @@
-import mongoose from "mongoose";
+import { Schema, model } from "mongoose";
 import validator from "validator";
 import bcrypt from "bcryptjs";
-import Task from "../tasks/task-model";
 import { errorMess } from "../../constant";
+import { IUser } from "./user-type";
 
-
-const userSchema = new mongoose.Schema(
+const userSchema = new Schema<IUser>(
   {
     name: {
       type: String,
@@ -61,7 +60,7 @@ const userSchema = new mongoose.Schema(
 userSchema.virtual("tasks", {
   ref: "Task",
   localField: "_id",
-  foreignField: "owner_id",
+  foreignField: "ownerId",
 });
 
 userSchema.methods.toJSON = function () {
@@ -83,6 +82,6 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-const User = mongoose.model("User", userSchema);
+const User = model<IUser>("User", userSchema);
 
 export default User;
